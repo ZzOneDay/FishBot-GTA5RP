@@ -1,0 +1,5 @@
+# Ignore generating files
+.classpath
+.project
+.settings/
+target/
