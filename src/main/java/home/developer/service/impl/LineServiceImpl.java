@@ -1,11 +1,9 @@
 package home.developer.service.impl;
 
 import home.developer.service.LineService;
-import org.springframework.stereotype.Service;
 
 import java.awt.*;
 
-@Service
 public class LineServiceImpl implements LineService {
     private final double indexA;
     private final double indexB;
