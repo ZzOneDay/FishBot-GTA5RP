@@ -130,4 +130,18 @@ public class TrajectoryServiceImpl implements TrajectoryService {
 
         return points;
     }
+
+public Point generateRandomPoint(Point currentPoint) {
+    Point point1 = new Point(828,380);
+    Point point2 = new Point(806,987);
+    Point point3 = new Point(871,1110);
+    Point point4 = new Point(1810,973);
+    List<Point> points = new ArrayList<>(4);
+    points.add(point1);
+    points.add(point2);
+    points.add(point3);
+    points.add(point4);
+    sortPoints(currentPoint, points);
+    return points.get(points.size() - 1);
+    }
 }

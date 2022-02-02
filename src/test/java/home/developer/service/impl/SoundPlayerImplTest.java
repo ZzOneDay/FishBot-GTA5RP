@@ -16,9 +16,4 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 public class SoundPlayerImplTest extends TestCase {
     @Autowired
     SoundPlayerImpl soundPlayer;
-
-    @Test
-    public void startApplicationSound() {
-        soundPlayer.playMusicStart();
-    }
 }

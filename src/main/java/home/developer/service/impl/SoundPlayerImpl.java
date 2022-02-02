@@ -23,7 +23,7 @@ public class SoundPlayerImpl implements SoundPlayer {
 
     public void applicationMusicFinish() {
         try {
-            File audio = new File("src/main/resources/start.wav");
+            File audio = new File("src/main/resources/finish.wav");
             Clip clip = AudioSystem.getClip();
             clip.open(AudioSystem.getAudioInputStream(audio));
             clip.start();

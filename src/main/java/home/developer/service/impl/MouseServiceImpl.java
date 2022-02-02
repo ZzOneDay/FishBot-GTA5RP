@@ -12,43 +12,47 @@ import java.util.List;
 
 @Service
 public class MouseServiceImpl implements MouseService {
-
-    @Autowired
-    private Robot robot;
-
-    @Autowired
-    private RandomGenerator randomGenerator;
-
-    @Value("${mouse.click.delay.min}")
-    private int clickDelayMin;
-
-    @Value("${mouse.click.delay.max}")
-    private int clickDelayMax;
-
-    @Value("${mouse.click.key}")
-    private int keyClick;
+    private final int clickDelayMin = 100;
+    private final int clickDelayMax = 200;
 
     @Override
     public Point getCurrentPosition() {
         return MouseInfo.getPointerInfo().getLocation();
     }
 
-    @Override
-    public void click() {
-        // Push
-        robot.mousePress(MouseEvent.BUTTON1_DOWN_MASK);
+    private Robot robot;
+    private final RandomGenerator randomGenerator;
 
-        // Wait
-        robot.delay(randomGenerator.generateValue(clickDelayMin, clickDelayMax));
-
-        // Not push
-        robot.mouseRelease(MouseEvent.BUTTON1_DOWN_MASK);
+    public MouseServiceImpl() {
+        try {
+            this.robot = new Robot();
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+        this.randomGenerator = new RandomGenerator();
     }
 
     @Override
-    public void move(List<Point> way) {
-        for (Point point : way) {
-            robot.mouseMove((int) point.getX(), (int) point.getY());
+    public void click() {
+        try {
+            // Push
+            robot.mousePress(MouseEvent.BUTTON1_DOWN_MASK);
+            // Wait
+            Thread.sleep(randomGenerator.generateValue(clickDelayMin, clickDelayMax));
+            // Not push
+            robot.mouseRelease(MouseEvent.BUTTON1_DOWN_MASK);
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    @Override
+    public void move(Point point) {
+        robot.mouseMove((int) point.getX(), (int) point.getY());
+        try {
+            Thread.sleep(randomGenerator.generateValue(10, 100));
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
         }
     }
 

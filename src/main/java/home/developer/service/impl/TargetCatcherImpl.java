@@ -2,15 +2,24 @@ package home.developer.service.impl;
 
 import home.developer.service.TargetCatcher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.awt.*;
 
+@Service
 public class TargetCatcherImpl implements TargetCatcher {
-
-    @Autowired
     Robot robot;
 
+    public TargetCatcherImpl() {
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+    }
+
     public boolean isReadyForFishing(Point point, int fieldRGB) {
+
         //Color of field
         int red1 = (fieldRGB >> 16) & 0xff;
         int green1 = (fieldRGB >> 8) & 0xff;

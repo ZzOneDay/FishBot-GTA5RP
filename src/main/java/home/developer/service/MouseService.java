@@ -19,11 +19,11 @@ public interface MouseService {
     void click();
 
     /**
-     * Mouse move by points (way)
+     * move to target
      *
-     * @param way points
+     * @param point target
      */
-    void move(List<Point> way);
+    void move(Point point);
 
     /**
      * Mouse move and click after every moving

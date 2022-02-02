@@ -54,15 +54,15 @@ public class MouseServiceImplTest extends TestCase {
         assertTrue(timeMillisFinish - timeMillisStart > clickDelayMin);
     }
 
-    @Test
-    public void testMove1() {
-        List<Point> points = new ArrayList<>();
-        points.add(new Point(10, 10));
-        points.add(new Point(50, 50));
-        points.add(new Point(100, 100));
-        Point point = new Point(200, 200);
-
-        mouseService.move(points);
-        assertEquals(point, mouseService.getCurrentPosition());
-    }
+//    @Test
+//    public void testMove1() {
+//        List<Point> points = new ArrayList<>();
+//        points.add(new Point(10, 10));
+//        points.add(new Point(50, 50));
+//        points.add(new Point(100, 100));
+//        Point point = new Point(200, 200);
+//
+//        mouseService.move(points);
+//        assertEquals(point, mouseService.getCurrentPosition());
+//    }
 }

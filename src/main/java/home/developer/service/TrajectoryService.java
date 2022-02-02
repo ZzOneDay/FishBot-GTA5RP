@@ -13,4 +13,7 @@ public interface TrajectoryService {
      * @return list of points like as way for mouse moving
      */
     List<Point> generatedTrajectory(Point start, Point finish);
+
+
+    Point generateRandomPoint(Point currentPoint);
 }
