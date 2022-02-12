@@ -8,6 +8,7 @@ import home.developer.service.TrajectoryService;
 import home.developer.service.impl.MouseServiceImpl;
 import home.developer.service.impl.TargetCatcherImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
@@ -29,80 +30,94 @@ public class Runner {
     private RandomGenerator randomGenerator;
 
     @Autowired
+    private TargetCatcher targetCatcher;
+
+    @Autowired
     private Robot robot;
+
+    @Autowired
+    private Point targetPoint;
+
+    @Autowired
+    private int targetColor;
+
+    @Value("${audio.log.processing}")
+    private boolean processWithAudio;
+
+    @Value("${time.waiting.start.process.min}")
+    private int timeWaitingStartProcessMin;
+
+    @Value("${time.waiting.start.process.max}")
+    private int timeWaitingStartProcessMax;
+
+    @Value("${time.process.limit}")
+    private int timeProcessLimit;
 
 
     public void run() throws InterruptedException {
-        int color = new Color(252, 1, 5, 255).getRGB();
-        //java.awt.Point[x=1373,y=1191]
-        Point point = new Point(1098, 952);
         Thread clicking = null;
         Thread moving = null;
-
-
-        TargetCatcher catcher = new TargetCatcherImpl();
-
         Long lastStart = null;
         boolean fishingStart = false;
+
+        Thread.sleep(randomGenerator.generateValue(timeWaitingStartProcessMin, timeWaitingStartProcessMax));
         while (true) {
-            if (!fishingStart && catcher.isReadyForFishing(point, color)) {
-                    System.out.println("start fishing");
-                    soundPlayer.applicationMusicStart();
-                    Point point1 = mouseService.getCurrentPosition();
-                    Point point2 = trajectoryService.generateRandomPoint(point1);
-                    clicking = new Thread(threadClicking());
-                    clicking.setName("Thread for Clicking");
-                    moving = new Thread(threadMoving(point1, point2));
-                    moving.setName("Thread for Moving");
-                    clicking.start();
-                    moving.start();
-                    lastStart = System.currentTimeMillis();
-                    fishingStart = true;
+            // Нужно начинать рыбачить.
+            if (!fishingStart && targetCatcher.isReadyForFishing(targetPoint, targetColor)) {
+                System.out.println("ИНФО: Начат процесс ловли");
+                startAudio();
+                // Поток для кликанья
+                clicking = new Thread(threadClicking());
+                clicking.setName("Thread for Clicking");
+
+                // Поток для водить мышкой
+                Point point1 = mouseService.getCurrentPosition();
+                Point point2 = trajectoryService.generateRandomPoint(point1);
+                moving = new Thread(threadMoving(point1, point2));
+                moving.setName("Thread for Moving");
+
+                // Запуск обоих потоков
+                clicking.start();
+                moving.start();
+
+                // Задание переменных для отслеживания
+                lastStart = System.currentTimeMillis();
+                fishingStart = true;
             }
 
-
-            if (fishingStart && !catcher.isReadyForFishing(point, color)) {
-                System.out.println("StopFishing");
-                System.out.println("Пытаюсь остановить потоки!");
+            // Превышен лимит ожидания, сколько можно там кликать мышкой?
+            if (lastStart != null && System.currentTimeMillis() - lastStart > timeProcessLimit) {
+                System.out.println("ОШИБКА: Лимит по времени. Прекращаю процесс ловли.");
                 clicking.interrupt();
                 moving.interrupt();
-                if (clicking.isInterrupted() && moving.isInterrupted()) {
-                    System.out.println("STOPPING");
-                    soundPlayer.applicationMusicFinish();
-                    break;
-                }
             }
 
-            if (lastStart != null) {
-                System.out.println(lastStart - System.currentTimeMillis());
-            }
+            // Нужно заканчивать рыбачить
+            if (fishingStart && !targetCatcher.isReadyForFishing(targetPoint, targetColor)) {
+                System.out.println("ИНФО: Остановка процесса ловли");
+                //Остановка потоков
+                clicking.interrupt();
+                moving.interrupt();
 
-
-            if (lastStart != null && System.currentTimeMillis() - lastStart > 6000) {
-                System.out.println("LIMIT TIME. FAST OFF APPLICATION");
-                while (!clicking.isInterrupted() || !moving.isInterrupted()) {
-                    clicking.interrupt();
-                    moving.interrupt();
-                }
-
+                //Только когда все потоки остановились, выходим из цикла
                 if (clicking.isInterrupted() && moving.isInterrupted()) {
-                    System.out.println("STOPPING");
-                    soundPlayer.applicationMusicFinish();
+                    System.out.println("ИНФО: Процесс ловли остановлен");
+                    finishAudio();
                     break;
                 }
             }
         }
     }
 
-    Thread threadMoving(Point point1, Point point2) {
+    private Thread threadMoving(Point point1, Point point2) {
         Iterator<Point> iterator = trajectoryService.generatedTrajectory(point1, point2).iterator();
         return new Thread(() -> {
-            MouseService mouseService = new MouseServiceImpl();
             while (!Thread.interrupted()) {
                 if (iterator.hasNext()) {
-                    //System.out.println("Move mouse");
                     mouseService.move(iterator.next());
                 }
+
+                // На всякий случай. Дополнительная остановка потока
                 if (Thread.interrupted()) {
                     Thread.currentThread().interrupt();
                     break;
@@ -111,16 +126,30 @@ public class Runner {
         });
     }
 
-    Thread threadClicking() {
+    private Thread threadClicking() {
         return new Thread(() -> {
             while (!Thread.interrupted()) {
-                //System.out.println("Click mouse");
                 mouseService.click();
+
+                // На всякий случай. Дополнительная остановка потока
                 if (Thread.interrupted()) {
                     Thread.currentThread().interrupt();
                     break;
                 }
             }
         });
+    }
+
+
+    private void startAudio() {
+        if (processWithAudio) {
+            soundPlayer.applicationMusicStart();
+        }
+    }
+
+    private void finishAudio() {
+        if (processWithAudio) {
+            soundPlayer.applicationMusicFinish();
+        }
     }
 }

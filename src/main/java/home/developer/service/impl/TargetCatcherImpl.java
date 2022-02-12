@@ -2,21 +2,17 @@ package home.developer.service.impl;
 
 import home.developer.service.TargetCatcher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
 
 @Service
+@Scope("prototype")
 public class TargetCatcherImpl implements TargetCatcher {
-    Robot robot;
 
-    public TargetCatcherImpl() {
-        try {
-            robot = new Robot();
-        } catch (AWTException e) {
-            e.printStackTrace();
-        }
-    }
+    @Autowired
+    private Robot robot;
 
     public boolean isReadyForFishing(Point point, int fieldRGB) {
 

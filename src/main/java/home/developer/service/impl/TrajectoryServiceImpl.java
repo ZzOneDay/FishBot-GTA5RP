@@ -132,10 +132,10 @@ public class TrajectoryServiceImpl implements TrajectoryService {
     }
 
 public Point generateRandomPoint(Point currentPoint) {
-    Point point1 = new Point(828,380);
-    Point point2 = new Point(806,987);
-    Point point3 = new Point(871,1110);
-    Point point4 = new Point(1810,973);
+    Point point1 = new Point(635,400);
+    Point point2 = new Point(1200,987);
+    Point point3 = new Point(614,999);
+    Point point4 = new Point(1310,973);
     List<Point> points = new ArrayList<>(4);
     points.add(point1);
     points.add(point2);
