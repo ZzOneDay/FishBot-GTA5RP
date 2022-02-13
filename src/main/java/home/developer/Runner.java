@@ -1,10 +1,8 @@
 package home.developer;
 
 import home.developer.core.RandomGenerator;
-import home.developer.service.MouseService;
-import home.developer.service.SoundPlayer;
-import home.developer.service.TargetCatcher;
-import home.developer.service.TrajectoryService;
+import home.developer.service.*;
+import home.developer.service.impl.LineServiceImpl;
 import home.developer.service.impl.MouseServiceImpl;
 import home.developer.service.impl.TargetCatcherImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.security.spec.RSAOtherPrimeInfo;
 import java.util.Iterator;
+import java.util.List;
 
 @Service
 public class Runner {
@@ -72,8 +72,7 @@ public class Runner {
 
                 // Поток для водить мышкой
                 Point point1 = mouseService.getCurrentPosition();
-                Point point2 = trajectoryService.generateRandomPoint(point1);
-                moving = new Thread(threadMoving(point1, point2));
+                moving = new Thread(threadMoving(point1));
                 moving.setName("Thread for Moving");
 
                 // Запуск обоих потоков
@@ -88,8 +87,11 @@ public class Runner {
             // Превышен лимит ожидания, сколько можно там кликать мышкой?
             if (lastStart != null && System.currentTimeMillis() - lastStart > timeProcessLimit) {
                 System.out.println("ОШИБКА: Лимит по времени. Прекращаю процесс ловли.");
-                clicking.interrupt();
-                moving.interrupt();
+                while (!clicking.isInterrupted() || !moving.isInterrupted()) {
+                    clicking.interrupt();
+                    moving.interrupt();
+                }
+                break;
             }
 
             // Нужно заканчивать рыбачить
@@ -100,27 +102,49 @@ public class Runner {
                 moving.interrupt();
 
                 //Только когда все потоки остановились, выходим из цикла
-                if (clicking.isInterrupted() && moving.isInterrupted()) {
+                while (!clicking.isInterrupted() && !moving.isInterrupted()) {
                     System.out.println("ИНФО: Процесс ловли остановлен");
                     finishAudio();
                     break;
                 }
+                break;
             }
         }
     }
 
-    private Thread threadMoving(Point point1, Point point2) {
-        Iterator<Point> iterator = trajectoryService.generatedTrajectory(point1, point2).iterator();
+    private Thread threadMoving(Point point1) {
         return new Thread(() -> {
-            while (!Thread.interrupted()) {
-                if (iterator.hasNext()) {
-                    mouseService.move(iterator.next());
+            List<Point> list = trajectoryService.generatedTrajectory();
+            int startIndex = randomGenerator.generateValue(1, list.size() - 1);
+            Point startPoint = list.get(startIndex);
+            LineService lineService = LineServiceImpl.createLineOf2Points(point1, startPoint);
+            if (point1.getX() > startPoint.getX()) {
+                for (int x = (int) point1.getX(); x > startPoint.getX(); x--) {
+                    mouseService.move(new Point(x, lineService.getY(x)));
+                }
+            } else {
+                for (int x = (int) point1.getX(); x < startPoint.getX(); x++) {
+                    mouseService.move(new Point(x, lineService.getY(x)));
+                }
+            }
+
+            int start = startIndex;
+            boolean needToStop = false;
+            while (!Thread.currentThread().isInterrupted()) {
+                for (int i = start; i < list.size(); i++) {
+                    if (!Thread.currentThread().isInterrupted()) {
+                        mouseService.move(list.get(i));
+                    } else {
+                        needToStop = true;
+                        break;
+                    }
                 }
 
-                // На всякий случай. Дополнительная остановка потока
-                if (Thread.interrupted()) {
-                    Thread.currentThread().interrupt();
+                if (needToStop) {
                     break;
+                } else {
+                    start = 0;
+                    list = trajectoryService.generatedTrajectory();
                 }
             }
         });
@@ -128,11 +152,11 @@ public class Runner {
 
     private Thread threadClicking() {
         return new Thread(() -> {
-            while (!Thread.interrupted()) {
+            while (!Thread.currentThread().isInterrupted()) {
                 mouseService.click();
 
                 // На всякий случай. Дополнительная остановка потока
-                if (Thread.interrupted()) {
+                if (Thread.currentThread().isInterrupted()) {
                     Thread.currentThread().interrupt();
                     break;
                 }

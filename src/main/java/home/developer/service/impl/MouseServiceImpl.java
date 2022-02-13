@@ -53,27 +53,31 @@ public class MouseServiceImpl implements MouseService {
     public void click() {
         try {
             // Wait before click
-            Thread.sleep(randomGenerator.generateValue(clickDelayStartMin, clickDelayStartMax));
+            if (!Thread.currentThread().isInterrupted()) {
+                Thread.sleep(randomGenerator.generateValue(clickDelayStartMin, clickDelayStartMax));
+            }
             // Push
             robot.mousePress(MouseEvent.BUTTON1_DOWN_MASK);
             // Wait
-            Thread.sleep(randomGenerator.generateValue(clickDelayPushMin, clickDelayPushMax));
+            if (!Thread.currentThread().isInterrupted()) {
+                Thread.sleep(randomGenerator.generateValue(clickDelayPushMin, clickDelayPushMax));
+            }
             // Not push
             robot.mouseRelease(MouseEvent.BUTTON1_DOWN_MASK);
         } catch (Exception e) {
             Thread.currentThread().interrupt();
-            System.err.println(e.getMessage());
         }
     }
 
     @Override
     public void move(Point point) {
-        try {
-            Thread.sleep(randomGenerator.generateValue(moveDelayStepMin, moveDelayStepMax));
-            robot.mouseMove((int) point.getX(), (int) point.getY());
-        } catch (Exception e) {
-            Thread.currentThread().interrupt();
-            System.err.println(e.getMessage());
+        if (!Thread.currentThread().isInterrupted()) {
+            try {
+                Thread.sleep(randomGenerator.generateValue(moveDelayStepMin, moveDelayStepMax) / 100);
+                robot.mouseMove((int) point.getX(), (int) point.getY());
+            } catch (Exception e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 

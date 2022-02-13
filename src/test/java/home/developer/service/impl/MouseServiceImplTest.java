@@ -28,7 +28,7 @@ public class MouseServiceImplTest extends TestCase {
     Robot robot;
 
     @Autowired
-    TrajectoryService trajectoryService;
+    TrajectoryServiceImpl trajectoryServiceImpl;
 
     @Value("${mouse.click.delay.push.min}")
     private int clickDelayMin;
@@ -76,10 +76,13 @@ public class MouseServiceImplTest extends TestCase {
         Point point1 = new Point(450,250);
         Point point2 = new Point(1700, 800);
 
-        List<Point> list = trajectoryService.generatedTrajectory(point1, point2);
+        Point center = new Point(1000,450);
+        for (int i = 0; i < 10; i++) {
+            List<Point> list = trajectoryServiceImpl.generatedTrajectory();
 
-        for (Point point : list) {
-            mouseService.move(point);
+            for (Point point : list) {
+                mouseService.move(point);
+            }
         }
 
     }

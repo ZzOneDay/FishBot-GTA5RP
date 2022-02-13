@@ -1,7 +1,6 @@
 package home.developer.service.impl;
 
 import home.developer.core.RandomGenerator;
-import home.developer.service.LineService;
 import home.developer.service.TrajectoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,127 +20,291 @@ public class TrajectoryServiceImpl implements TrajectoryService {
     @Value("${trajectory.point.random.count}")
     private int count;
 
+    @Value("${trajectory.point.center.valueX}")
+    private int centerValueX;
+
+    @Value("${trajectory.point.center.valueX.min}")
+    private int centerValueXMin;
+
+    @Value("${trajectory.point.center.valueX.max}")
+    private int centerValueXMax;
+
+    @Value("${trajectory.point.center.valueY}")
+    private int centerValueY;
+
+    @Value("${trajectory.point.center.valueY.min}")
+    private int centerValueYMin;
+
+    @Value("${trajectory.point.center.valueY.max}")
+    private int centerValueYMax;
+
+    @Value("${trajectory.delta.min}")
+    private int deltaMin;
+
+    @Value("${trajectory.delta.max}")
+    private int deltaMax;
+
+    @Value("${trajectory.delta.valueY.min}")
+    private int deltaValueYMin;
+
+    @Value("${trajectory.delta.valueY.max}")
+    private int deltaValueYMax;
+
+
+    //trajectory.delta.valueY.min
     @Override
-    public List<Point> generatedTrajectory(Point start, Point finish) {
-        List<Point> pointList = createRandomPoints(start, finish, count);
+    public List<Point> generatedTrajectory() {
+        int centerX = centerValueX - randomGenerator.generateValue(centerValueXMin, centerValueXMax);
+        int centerY = centerValueY - randomGenerator.generateValue(centerValueYMin, centerValueYMax);
+//        int centerX = 1000;
+//        int centerY = 600;
+        Point center = new Point(centerX, centerY);
         List<Point> trajectory = new LinkedList<>();
 
-        for (int i = 0; i < pointList.size() - 2; i++) {
-            Point point1 = pointList.get(i);
-            Point point2 = pointList.get(i + 1);
-            List<Point> pointsOfWay = getWay(point1, point2);
-            trajectory.addAll(pointsOfWay);
-        }
+        List<Point> list1 = trajectory1(center);
+        List<Point> list2 = trajectory2(center);
+        List<Point> list3 = trajectory3(center);
+        List<Point> list4 = trajectory4(center);
+
+//        trajectory.addAll(list1);
+//        trajectory.addAll(list2);
+//        trajectory.addAll(list3);
+//        trajectory.addAll(list4);
+
+        List<Point> leftList = cleanLeftList(list1, list2);
+        List<Point> rightList = cleanRightList(list3, list4);
+
+        connectUp(list1, list4);
+        connectDown(list2,list3);
+
+        trajectory.addAll(leftList);
+        trajectory.addAll(rightList);
+
         return trajectory;
     }
 
+    /**
+     * Траектория движения
+     * - - - - - S
+     * -
+     * F
+     */
+    private List<Point> trajectory1(Point center) {
+        int centerY = (int) center.getY();
+        int centerX = (int) center.getX();
 
-    public List<Point> createRandomPoints(Point start, Point finish, int count) {
-        List<Point> points = new ArrayList<>(count + 2);
-        while (points.size() < count) {
-            points.add(generatePoint(start, finish));
-        }
-        points.add(start);
-        points.add(finish);
+        int startY = centerY - randomGenerator.generateValue(deltaValueYMin, deltaValueYMax);
+        List<Point> list = new ArrayList<>();
+        int currentX = 0;
+        double delta = (double) randomGenerator.generateValue(deltaMin, deltaMax) / 10000;
+        while (true) {
+            currentX = currentX + 1;
+            int valueY = (int) Math.floor(delta * (Math.pow(currentX, 2) / 2)); //0.002-0.005
+            Point point = new Point(centerX - currentX, startY + valueY);
 
-        sortPoints(start, points);
-        return points;
-    }
-
-    public Point generatePoint(Point point1, Point point2) {
-        int valueX1 = (int) point1.getX();
-        int valueX2 = (int) point2.getX();
-
-        int valueY1 = (int) point1.getY();
-        int valueY2 = (int) point2.getY();
-
-        int valueX;
-        if (valueX1 < valueX2) {
-            valueX = randomGenerator.generateValue(valueX1, valueX2);
-        } else {
-            valueX = randomGenerator.generateValue(valueX2, valueX1);
-        }
-
-        int valueY;
-        if (valueY1 < valueY2) {
-            valueY = randomGenerator.generateValue(valueY1, valueY2);
-        } else {
-            valueY = randomGenerator.generateValue(valueY2, valueY1);
-        }
-
-        return new Point(valueX, valueY);
-    }
-
-    public void sortPoints(Point start, List<Point> points) {
-        points.sort((o1, o2) -> {
-            double delta1 = Math.abs(start.getX() - o1.getX());
-            double delta2 = Math.abs(start.getY() - o1.getY());
-
-            double delta3 = Math.abs(start.getX() - o2.getX());
-            double delta4 = Math.abs(start.getY() - o2.getY());
-
-            if (o1.equals(o2)) {
-                return 0;
+            if (!list.contains(point)) {
+                list.add(point);
             }
 
-            if (delta1 + delta2 > delta3 + delta4) {
-                return +1;
-            } else {
-                return -1;
+            if (point.getY() > centerY + 200) {
+                break;
             }
-        });
+        }
+        return list;
     }
 
-    public List<Point> getWay(Point point1, Point point2) {
-        List<Point> points = new ArrayList<>();
-        LineService lineService = LineServiceImpl.createLineOf2Points(point1, point2);
 
-        if (point1.getX() < point2.getX()) {
-            for (int currentX = (int) point1.getX(); currentX < (int) point2.getX(); currentX++) {
-                Point point = new Point(currentX, lineService.getY(currentX));
-                if (!points.contains(point)) {
-                    points.add(point);
+    /**
+     * Траектория движения
+     * S
+     * -
+     * -
+     * - - - - - F
+     */
+    private List<Point> trajectory2(Point center) {
+        int centerY = (int) center.getY();
+        int centerX = (int) center.getX();
+
+        int startY = centerY + randomGenerator.generateValue(deltaValueYMin, deltaValueYMax);
+        List<Point> list = new ArrayList<>();
+        int currentX = 0;
+        double delta = (double) randomGenerator.generateValue(deltaMin, deltaMax) / 10000;
+        while (true) {
+            currentX = currentX + 1;
+            int valueY = (int) Math.floor(delta * (Math.pow(currentX, 2) / 2)); //0.002-0.005
+            Point point = new Point(centerX - currentX, startY - valueY);
+
+            if (!list.contains(point)) {
+                list.add(0, point);
+            }
+
+            if (point.getY() < centerY - 200) {
+                break;
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Траектория движения
+     * F
+     * -
+     * -
+     * S - - - - -
+     */
+    private List<Point> trajectory3(Point center) {
+        int centerY = (int) center.getY();
+        int centerX = (int) center.getX();
+
+        int startY = centerY + randomGenerator.generateValue(deltaValueYMin, deltaValueYMax);
+        List<Point> list = new ArrayList<>();
+        int currentX = 0;
+        double delta = (double) randomGenerator.generateValue(deltaMin, deltaMax) / 10000;
+        while (true) {
+            currentX = currentX + 1;
+            int valueY = (int) Math.floor(delta * (Math.pow(currentX, 2) / 2)); //0.002-0.005
+            Point point = new Point(centerX + currentX, startY - valueY);
+
+            if (!list.contains(point)) {
+                list.add(point);
+            }
+
+            if (point.getY() < centerY - 200) {
+                break;
+            }
+
+        }
+        return list;
+    }
+
+    /**
+     * Траектория движения
+     * F - - - - -
+     * -
+     * -
+     * S
+     */
+    private List<Point> trajectory4(Point center) {
+        int centerY = (int) center.getY();
+        int centerX = (int) center.getX();
+
+        int startY = centerY - randomGenerator.generateValue(deltaValueYMin, deltaValueYMax);
+        List<Point> list = new ArrayList<>();
+        int currentX = 0;
+        double delta = (double) randomGenerator.generateValue(deltaMin, deltaMax) / 10000;
+        while (true) {
+            currentX = currentX + 1;
+            int valueY = (int) Math.floor(delta * (Math.pow(currentX, 2) / 2)); //0.002-0.005
+            Point point = new Point(centerX + currentX, startY + valueY);
+
+            if (!list.contains(point)) {
+                list.add(0, point);
+            }
+
+            if (point.getY() > centerY + 200) {
+                break;
+            }
+
+        }
+        return list;
+    }
+
+    private List<Point> cleanLeftList(List<Point> list1, List<Point> list2) {
+        List<Point> leftList = new LinkedList<>();
+
+        int valueXLeft = 0;
+        for (Point point1 : list1) {
+            for (Point point2 : list2) {
+                if (isClosePoints(point1, point2)) {
+                    valueXLeft = (int) point1.getX();
+                    break;
+                }
+            }
+        }
+
+        for (Point point : list1) {
+            if (point.getX() > valueXLeft) {
+                leftList.add(point);
+            }
+        }
+
+        for (Point point : list2) {
+            if (point.getX() > valueXLeft) {
+                leftList.add(point);
+            }
+        }
+        return leftList;
+    }
+
+    private List<Point> cleanRightList(List<Point> list3, List<Point> list4) {
+        List<Point> rightList = new LinkedList<>();
+
+        int valueXRight = 0;
+        for (Point point3 : list3) {
+            for (Point point4 : list4) {
+                if (isClosePoints(point3, point4)) {
+                    valueXRight = (int) point3.getX();
+                    break;
+                }
+            }
+        }
+
+        for (Point point : list3) {
+            if (point.getX() < valueXRight) {
+                rightList.add(point);
+            }
+        }
+
+        for (Point point : list4) {
+            if (point.getX() < valueXRight) {
+                rightList.add(point);
+            }
+        }
+
+        return rightList;
+    }
+
+    private boolean isClosePoints(Point point1, Point point2) {
+        int delta = 5;
+        return Math.abs(point1.getX() - point2.getX()) < delta
+                && Math.abs(point1.getY() - point2.getY()) < delta;
+    }
+
+    private void connectUp(List<Point> list1, List<Point> list4) {
+        Point point1 = list1.get(0);
+        Point point4 = list4.get(list4.size() - 1);
+
+        if (point1.getY() > point4.getY()) {
+            for (Point point : list4) {
+                if (point.getY() < point1.getY()) {
+                    point.y = (int) point1.getY();
                 }
             }
         } else {
-            for (int currentX = (int) point2.getX(); currentX < (int) point1.getX(); currentX++) {
-                Point point = new Point(currentX, lineService.getY(currentX));
-                if (!points.contains(point)) {
-                    points.add(point);
+            for (Point point : list1) {
+                if (point.getY() < point4.getY()) {
+                    point.y = (int) point4.getY();
                 }
             }
         }
+    }
 
-        if (point1.getY() < point2.getY()) {
-            for (int currentY = (int) point1.getY(); currentY < (int) point2.getY(); currentY++) {
-                Point point = new Point(lineService.getX(currentY), currentY);
-                if (!points.contains(point)) {
-                    points.add(point);
+    private void connectDown(List<Point> list2, List<Point> list3) {
+        Point point2 = list2.get(list2.size() - 1);
+        Point point3 = list3.get(0);
+
+        if (point2.getY() > point3.getY()) {
+            for (Point point : list2) {
+                if (point.getY() > point3.getY()) {
+                    point.y = (int) point3.getY();
                 }
             }
         } else {
-            for (int currentY = (int) point2.getY(); currentY < (int) point1.getY(); currentY++) {
-                Point point = new Point(lineService.getX(currentY), currentY);
-                if (!points.contains(point)) {
-                    points.add(point);
+            for (Point point : list3) {
+                if (point.getY() > point2.getY()) {
+                    point.y = (int) point2.getY();
                 }
             }
         }
-
-        return points;
-    }
-
-public Point generateRandomPoint(Point currentPoint) {
-    Point point1 = new Point(635,400);
-    Point point2 = new Point(1200,987);
-    Point point3 = new Point(614,999);
-    Point point4 = new Point(1310,973);
-    List<Point> points = new ArrayList<>(4);
-    points.add(point1);
-    points.add(point2);
-    points.add(point3);
-    points.add(point4);
-    sortPoints(currentPoint, points);
-    return points.get(points.size() - 1);
     }
 }
