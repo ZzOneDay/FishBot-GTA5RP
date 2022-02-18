@@ -3,19 +3,15 @@ package home.developer;
 import home.developer.core.RandomGenerator;
 import home.developer.service.*;
 import home.developer.service.impl.LineServiceImpl;
-import home.developer.service.impl.MouseServiceImpl;
-import home.developer.service.impl.TargetCatcherImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
-import java.security.spec.RSAOtherPrimeInfo;
-import java.util.Iterator;
 import java.util.List;
 
 @Service
-public class Runner {
+public class FishingProcess {
 
     @Autowired
     private SoundPlayer soundPlayer;
@@ -60,7 +56,6 @@ public class Runner {
         Long lastStart = null;
         boolean fishingStart = false;
 
-        Thread.sleep(randomGenerator.generateValue(timeWaitingStartProcessMin, timeWaitingStartProcessMax));
         while (true) {
             // Нужно начинать рыбачить.
             if (!fishingStart && targetCatcher.isReadyForFishing(targetPoint, targetColor)) {

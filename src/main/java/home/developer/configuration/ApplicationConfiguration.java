@@ -29,6 +29,43 @@ public class ApplicationConfiguration {
     @Value("${target.point.value.y}")
     private int targetPointY;
 
+    //Colors
+    @Value("${process.needStarting.point.white.valueX}")
+    private int startingWhitePointValueX;
+
+    @Value("${process.needStarting.point.white.valueY}")
+    private int startingWhitePointValueY;
+
+    @Value("${process.needStarting.point.yellow.valueX}")
+    private int startingYellowPointValueX;
+
+    @Value("${process.needStarting.point.yellow.valueY}")
+    private int startingYellowPointValueY;
+
+    @Value("${process.success.point.valueX}")
+    private int successPointValueX;
+
+    @Value("${process.success.point.valueY}")
+    private int successPointValueY;
+
+    @Value("${process.fail.point.valueX}")
+    private int failPointValueX;
+
+    @Value("${process.fail.point.valueY}")
+    private int failPointValueY;
+
+    @Value("${process.needStopping.point.valueX}")
+    private int stoppingPointValueX;
+
+    @Value("${process.needStopping.point.valueY}")
+    private int stoppingPointValueY;
+
+    @Value("${process.needCaptcha.point.valueX}")
+    private int captchaPointValueX;
+
+    @Value("${process.needCaptcha.point.valueY}")
+    private int captchaPointValueY;
+
     @Bean
     @Scope("prototype")
     Robot robot() {
@@ -49,5 +86,65 @@ public class ApplicationConfiguration {
     @Bean
     int targetColor() {
         return new Color(colorTargetRed, colorTargetGreen, colorTargetBlue, colorTargetAlpha).getRGB();
+    }
+
+    @Bean
+    Point startingWhitePoint() {
+        return new Point(startingWhitePointValueX, startingWhitePointValueY);
+    }
+
+    @Bean
+    Color startingWhiteColor() {
+        return new Color(200,203,208,255);
+    }
+
+    @Bean
+    Point startingYellowPoint() {
+        return new Point(startingYellowPointValueX, startingYellowPointValueY);
+    }
+
+    @Bean
+    Color startingYellowColor() {
+        return new Color(241,184,24,255);
+    }
+
+    @Bean
+    Point successPoint() {
+        return new Point(successPointValueX, successPointValueY);
+    }
+
+    @Bean
+    Color successColor() {
+        return new Color(56,185,66,255);
+    }
+
+    @Bean
+    Point failPoint() {
+        return new Point(failPointValueX, failPointValueY);
+    }
+
+    @Bean
+    Color failColor() {
+        return new Color(172,16,53,255);
+    }
+
+    @Bean
+    Point stoppingPoint() {
+        return new Point(stoppingPointValueX, stoppingPointValueY);
+    }
+
+    @Bean
+    Color stoppingColor() {
+        return new Color(189,0,255,255);
+    }
+
+    @Bean
+    Point captchaPoint() {
+        return new Point(captchaPointValueX, captchaPointValueY);
+    }
+
+    @Bean
+    Color captchaColor() {
+        return new Color(249,249,249,255);
     }
 }
