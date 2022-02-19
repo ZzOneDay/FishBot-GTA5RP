@@ -31,4 +31,16 @@ public class SoundPlayerImpl implements SoundPlayer {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void applicationCaptcha() {
+        try {
+            File audio = new File("src/main/resources/captcha.wav");
+            Clip clip = AudioSystem.getClip();
+            clip.open(AudioSystem.getAudioInputStream(audio));
+            clip.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

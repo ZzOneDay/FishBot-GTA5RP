@@ -3,6 +3,7 @@ package home.developer;
 import home.developer.core.RandomGenerator;
 import home.developer.service.ActionCatcher;
 import home.developer.service.ImageCatcher;
+import home.developer.service.SoundPlayer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,22 +38,33 @@ public class RunningProcess {
     @Autowired
     Color failColor;
 
+    @Autowired
+    SoundPlayer soundPlayer;
+
     public void run() throws InterruptedException, IOException {
         System.out.println("Run FishBot Application");
 
         BufferedImage bufferedImage;
         boolean needToWork = false;
+        boolean activateNotification = true;
         while (true) {
             Thread.sleep(randomGenerator.generateValue(600, 800));
             bufferedImage = imageCatcher.updateImage();
             if (actionCatcher.needStarting(bufferedImage)) {
                 System.out.println("starting process");
                 needToWork = true;
+                activateNotification = true;
             }
 
             if (actionCatcher.failFishing(bufferedImage)) {
                 System.out.println("Stopping fail by fishing");
                 needToWork = false;
+
+                //  Один раз показали, и хватит
+                if (activateNotification) {
+                    soundPlayer.applicationCaptcha();
+                    activateNotification = false;
+                }
             }
 
             if (actionCatcher.needStopping(bufferedImage)) {
@@ -63,6 +75,12 @@ public class RunningProcess {
             if (actionCatcher.needCaptcha(bufferedImage)) {
                 System.out.println("Stopping by captcha");
                 needToWork = false;
+
+                //  Один раз показали, и хватит
+                if (activateNotification) {
+                    soundPlayer.applicationCaptcha();
+                    activateNotification = false;
+                }
             }
 
 
