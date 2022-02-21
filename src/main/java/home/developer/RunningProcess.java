@@ -48,7 +48,7 @@ public class RunningProcess {
         boolean needToWork = false;
         boolean activateNotification = true;
         while (true) {
-            Thread.sleep(randomGenerator.generateValue(600, 800));
+            Thread.sleep(randomGenerator.generateValue(500, 700));
             bufferedImage = imageCatcher.updateImage();
             if (actionCatcher.needStarting(bufferedImage)) {
                 System.out.println("starting process");
@@ -88,7 +88,7 @@ public class RunningProcess {
                 System.out.println("need to work");
                 if (actionCatcher.successFinishing(bufferedImage)) {
                     System.out.println("Success by fishing");
-                    Thread.sleep(randomGenerator.generateValue(1000, 4000));
+                    Thread.sleep(randomGenerator.generateValue(2000, 4000));
                     startFishing();
                     needToWork = false;
                 } else {

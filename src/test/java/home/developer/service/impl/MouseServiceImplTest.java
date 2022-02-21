@@ -61,14 +61,14 @@ public class MouseServiceImplTest extends TestCase {
 
     @Test
     public void testClickWhile() {
-//        try {
-//            Thread.sleep(3000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        while (true) {
-//            mouseService.click();
-//        }
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        for (int i = 0; i < 80; i++) {
+            mouseService.click();
+        }
     }
 
     @Test
