@@ -77,9 +77,15 @@ public class ActionCatcherImpl implements ActionCatcher {
         Color currentRGB1 = new Color(bufferedImage.getRGB(captchaPoint.x, captchaPoint.y));
         Color currentRGB2 = new Color(bufferedImage.getRGB(captchaPoint.x + 5, captchaPoint.y + 5));
         Color currentRGB3 = new Color(bufferedImage.getRGB(captchaPoint.x - 5, captchaPoint.y - 5));
+
+        Color currentRGBRED = new Color(bufferedImage.getRGB(1240, 800));
+        Color captchaRGBRED = new Color(240,35,59);
+//        Stopping by captcha
+//        Color is java.awt.Color[r=240,g=35,b=59]
         return isCloseColor(captchaColor, currentRGB1) &&
                 isCloseColor(captchaColor, currentRGB2) &&
-                isCloseColor(captchaColor, currentRGB3);
+                isCloseColor(captchaColor, currentRGB3) &&
+                isCloseColor(captchaRGBRED, currentRGBRED);
     }
 
     private boolean isCloseColor(Color color1, Color color2) {
@@ -94,10 +100,10 @@ public class ActionCatcherImpl implements ActionCatcher {
         int green2 = (colorValue2 >> 8) & 0xff;
         int blue2 = (colorValue2) & 0xff;
 
-        boolean hasRed = Math.abs(red1 - red2) < 40;
-        boolean hasGreen = Math.abs(green1 - green2) < 40;
+        boolean hasRed = Math.abs(red1 - red2) < 30;
+        boolean hasGreen = Math.abs(green1 - green2) < 30;
         ;
-        boolean hasBlue = Math.abs(blue1 - blue2) < 40;
+        boolean hasBlue = Math.abs(blue1 - blue2) < 30;
         ;
         return hasRed && hasGreen && hasBlue;
     }

@@ -75,6 +75,8 @@ public class RunningProcess {
             if (actionCatcher.needCaptcha(bufferedImage)) {
                 System.out.println("Stopping by captcha");
                 needToWork = false;
+                Color currentRGBRED = new Color(bufferedImage.getRGB(1240, 800));
+                System.out.println("\tColor is " + currentRGBRED);
 
                 //  Один раз показали, и хватит
                 if (activateNotification) {
