@@ -1,6 +1,7 @@
 package home.developer;
 
 import home.developer.configuration.ApplicationConfiguration;
+import home.developer.discord.UpdateNameService;
 import home.developer.service.MouseService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -14,6 +15,9 @@ public class StartApplication {
         ApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
         RunningProcess runningProcess = context.getBean(RunningProcess.class);
         runningProcess.run();
+
+
+
 
 
 //        while (true) {

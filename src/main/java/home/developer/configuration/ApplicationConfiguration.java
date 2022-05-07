@@ -8,7 +8,7 @@ import java.awt.*;
 
 @Configuration
 @ComponentScan("home")
-@PropertySource("classpath:application1900x1200.properties")
+@PropertySource("classpath:application1280x800.properties")
 public class ApplicationConfiguration {
 
     @Value("${target.point.color.red}")

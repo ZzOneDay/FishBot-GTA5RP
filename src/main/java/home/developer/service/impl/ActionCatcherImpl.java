@@ -78,7 +78,7 @@ public class ActionCatcherImpl implements ActionCatcher {
         Color currentRGB2 = new Color(bufferedImage.getRGB(captchaPoint.x + 5, captchaPoint.y + 5));
         Color currentRGB3 = new Color(bufferedImage.getRGB(captchaPoint.x - 5, captchaPoint.y - 5));
 
-        Color currentRGBRED = new Color(bufferedImage.getRGB(919, 677));
+        Color currentRGBRED = new Color(bufferedImage.getRGB(600, 475));
         Color captchaRGBRED = new Color(240,35,59);
 //        Stopping by captcha
 //        Color is java.awt.Color[r=240,g=35,b=59]

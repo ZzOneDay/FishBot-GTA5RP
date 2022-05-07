@@ -1,18 +1,28 @@
 package home.developer;
 
 import home.developer.core.RandomGenerator;
+import home.developer.discord.UpdateNameService;
 import home.developer.service.ActionCatcher;
 import home.developer.service.ImageCatcher;
 import home.developer.service.SoundPlayer;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPatch;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.ls.LSOutput;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
 
 @Service
 public class RunningProcess {
@@ -43,6 +53,11 @@ public class RunningProcess {
 
     public void run() throws InterruptedException, IOException {
         System.out.println("Run FishBot Application");
+        UpdateNameService updateNameService = new UpdateNameService();
+        int countFish = 0;
+        int updateAfterFish = randomGenerator.generateValue(5,10);
+
+
 
         BufferedImage bufferedImage;
         boolean needToWork = false;
@@ -75,8 +90,8 @@ public class RunningProcess {
             if (actionCatcher.needCaptcha(bufferedImage)) {
                 System.out.println("Stopping by captcha");
                 needToWork = false;
-                Color currentRGBRED = new Color(bufferedImage.getRGB(1240, 800));
-                System.out.println("\tColor is " + currentRGBRED);
+//                Color currentRGBRED = new Color(bufferedImage.getRGB(1240, 800));
+//                System.out.println("\tColor is " + currentRGBRED);
 
                 //  Один раз показали, и хватит
                 if (activateNotification) {
@@ -90,7 +105,15 @@ public class RunningProcess {
                 System.out.println("need to work");
                 if (actionCatcher.successFinishing(bufferedImage)) {
                     System.out.println("Success by fishing");
-                    Thread.sleep(randomGenerator.generateValue(2000, 4000));
+                    System.out.println("countFish " + countFish + " updateAfterFish " + updateAfterFish);
+                    countFish++;
+                    if (countFish > updateAfterFish) {
+                        updateNameService.updateNick(countFish);
+                        System.out.println("Обновление ника");
+                        countFish = 0;
+                        updateAfterFish = randomGenerator.generateValue(5,10);
+                    }
+                    Thread.sleep(randomGenerator.generateValue(5000, 8000));
                     startFishing();
                     needToWork = false;
                 } else {
