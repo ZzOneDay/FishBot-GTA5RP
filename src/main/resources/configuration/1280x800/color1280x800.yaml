@@ -1,0 +1,36 @@
+mouseColors:
+  mouseRed:
+    valueR: 252
+    valueG: 1
+    valueB: 5
+  mouseWhite:
+    valueR: 200
+    valueG: 203
+    valueB: 208
+  mouseYellow:
+    valueR: 241
+    valueG: 184
+    valueB: 24
+processColors:
+  success:
+    valueR: 56
+    valueG: 185
+    valueB: 66
+  fail:
+    valueR: 172
+    valueG: 16
+    valueB: 53
+inventoryColors:
+  pointPurple:
+    valueR: 189
+    valueG: 0
+    valueB: 255
+captchaColors:
+  pointWhite:
+    valueR: 249
+    valueG: 249
+    valueB: 249
+  pointRed:
+    valueR: 240
+    valueG: 35
+    valueB: 59
