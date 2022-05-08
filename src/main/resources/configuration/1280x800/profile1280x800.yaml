@@ -1,4 +1,3 @@
-profileSettings :
-  name : 1280x800
-  custom : false
-  description : Мой профайл для разрешения 1280х800
+name: 1280x800
+custom: false
+description: Мой профайл для разрешения 1280х800

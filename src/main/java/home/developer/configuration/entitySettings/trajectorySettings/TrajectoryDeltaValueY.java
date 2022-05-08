@@ -10,6 +10,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TrajectoryDeltaValueY {
-    private int valueX;
-    private int valueY;
+    private int min;
+    private int max;
 }

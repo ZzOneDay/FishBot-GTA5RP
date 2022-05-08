@@ -1,6 +1,6 @@
 package home.developer.core;
 
-import home.developer.configuration.ApplicationConfiguration;
+import home.developer.configuration.CoreConfiguration;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ApplicationConfiguration.class, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = CoreConfiguration.class, loader = AnnotationConfigContextLoader.class)
 public class RandomGeneratorTest extends TestCase {
 
     @Autowired
