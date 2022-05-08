@@ -17,26 +17,11 @@ public class TrajectoryServiceImpl implements TrajectoryService {
     @Autowired
     private RandomGenerator randomGenerator;
 
-    @Value("${trajectory.point.random.count}")
-    private int count;
-
     @Value("${trajectory.point.center.valueX}")
     private int centerValueX;
 
-    @Value("${trajectory.point.center.valueX.min}")
-    private int centerValueXMin;
-
-    @Value("${trajectory.point.center.valueX.max}")
-    private int centerValueXMax;
-
     @Value("${trajectory.point.center.valueY}")
     private int centerValueY;
-
-    @Value("${trajectory.point.center.valueY.min}")
-    private int centerValueYMin;
-
-    @Value("${trajectory.point.center.valueY.max}")
-    private int centerValueYMax;
 
     @Value("${trajectory.delta.min}")
     private int deltaMin;
@@ -54,8 +39,8 @@ public class TrajectoryServiceImpl implements TrajectoryService {
     //trajectory.delta.valueY.min
     @Override
     public List<Point> generatedTrajectory() {
-        int centerX = centerValueX - randomGenerator.generateValue(centerValueXMin, centerValueXMax);
-        int centerY = centerValueY - randomGenerator.generateValue(centerValueYMin, centerValueYMax);
+        int centerX = centerValueX;
+        int centerY = centerValueY;
 //        int centerX = 1000;
 //        int centerY = 600;
         Point center = new Point(centerX, centerY);

@@ -1,0 +1,13 @@
+mouse:
+  push :
+    ## Сколько мы держим мышку зажатой
+    delayMin : 40
+    delayMax : 60
+  start :
+    ## Задержка прежде чем кликнуть на мышку
+    delayMin : 70
+    delayMax : 90
+  moving :
+    ## Задержка между передвижениями курсора
+    delayMin : 90
+    delayMax : 110

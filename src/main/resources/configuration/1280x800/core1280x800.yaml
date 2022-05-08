@@ -1,0 +1,7 @@
+coreSettings :
+  updateScreenSettings :
+    min : 500
+    max : 700
+  startProcessSettings :
+    min : 5000
+    max : 8000

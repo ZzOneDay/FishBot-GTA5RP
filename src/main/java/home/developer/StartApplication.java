@@ -12,9 +12,12 @@ import java.io.IOException;
 
 public class StartApplication {
     public static void main(String[] args) throws InterruptedException, AWTException, IOException {
-        ApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
-        RunningProcess runningProcess = context.getBean(RunningProcess.class);
-        runningProcess.run();
+//        ApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
+//        RunningProcess runningProcess = context.getBean(RunningProcess.class);
+//        runningProcess.run();
+
+
+
 
 
 

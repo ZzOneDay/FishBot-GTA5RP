@@ -1,0 +1,43 @@
+targets :
+  mouseTargets :
+    mouseRed :
+      valueX : 733
+      valueY : 679
+    mouseWhite :
+      valueX : 747
+      valueY : 680
+    mouseYellow :
+      valueX : 745
+      valueY : 702
+  processTargets :
+    success :
+      valueX : 335
+      valueY : 762
+    fail :
+      valueX : 337
+      valueY : 755
+  inventoryTargets :
+    pointPurpleLeft :
+      valueX : 80
+      valueY : 518
+    pointPurpleRight :
+      ## Одного пока достаточно
+      valueX : 80
+      valueY : 518
+  captchaTargets :
+    pointWhite1 :
+      valueX : 660
+      valueY : 340
+    pointWhite2 :
+      valueX : 665
+      valueY : 345
+    pointWhite3 :
+      valueX : 655
+      valueY : 335
+    pointRed1 :
+      valueX : 600
+      valueY : 475
+    pointRed2 :
+      ## Одной RED точки пока достаточно
+      valueX : 600
+      valueY : 475
