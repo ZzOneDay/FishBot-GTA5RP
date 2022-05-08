@@ -34,7 +34,6 @@ public class TargetCatcherImpl implements TargetCatcher {
         int currentRGB = robot.getPixelColor(
                 targetSettings.getMouseTargets().getMouseRed().getValueX(),
                 targetSettings.getMouseTargets().getMouseRed().getValueY()
-
         ).getRGB();
         int red2 = (currentRGB >> 16) & 0xff;
         int green2 = (currentRGB >> 8) & 0xff;

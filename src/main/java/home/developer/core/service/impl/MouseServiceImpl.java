@@ -4,6 +4,7 @@ import home.developer.configuration.entitySettings.mouseSettings.MouseSettings;
 import home.developer.core.RandomGenerator;
 import home.developer.core.service.MouseService;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,9 @@ import java.util.List;
 
 @Service
 @Scope("prototype")
-@AllArgsConstructor
 public class MouseServiceImpl implements MouseService {
+
+    @Autowired
     private MouseSettings mouseSettings;
 
     @Override
