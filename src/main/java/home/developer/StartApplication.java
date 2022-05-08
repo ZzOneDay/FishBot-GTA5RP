@@ -2,14 +2,41 @@ package home.developer;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class StartApplication {
     public static void main(String[] args) throws InterruptedException, AWTException, IOException {
 //        ApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
 //        RunningProcess runningProcess = context.getBean(RunningProcess.class);
 //        runningProcess.run();
+
+
+//        System.out.println("Процесс пошел!!!!!");
+//
+//        Thread.sleep(15000);
+//
+//        startCore.stop();
+//        System.out.println("ok");
+
         StartCore startCore = new StartCore();
-        startCore.run();;
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            String command = scanner.nextLine();
+
+            if (command.equals("start")) {
+                boolean result = startCore.run();
+                if (result) {
+                    System.out.println("Запуск прошел успешно");
+                } else {
+                    System.out.println("нихера не работает");
+                }
+            }
+
+            if (command.equals("stop")) {
+                startCore.stop();
+            }
+        }
+
 
 
 

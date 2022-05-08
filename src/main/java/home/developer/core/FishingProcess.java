@@ -3,25 +3,30 @@ package home.developer.core;
 import home.developer.core.service.*;
 import home.developer.core.service.impl.LineServiceImpl;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PreDestroy;
 import java.awt.*;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FishingProcess {
     private final MouseService mouseService;
     private final TrajectoryService trajectoryService;
     private final RandomGenerator randomGenerator;
     private final TargetCatcher targetCatcher;
 
+    // Исключены из конструктора
+    Thread clicking = null;
+    Thread moving = null;
+
+
     public void run() {
         int TIME_PROCESS_LIMIT = 12000;
-        Thread clicking = null;
-        Thread moving = null;
         Long lastStart = null;
         boolean fishingStart = false;
 
@@ -124,5 +129,18 @@ public class FishingProcess {
                 }
             }
         });
+    }
+
+
+    @PreDestroy
+    private void stopThreads() {
+        System.out.println("CORE: Останавливаю потоки (Двигать мышкой и Кликать мышкой) если нужно");
+        if (clicking != null) {
+            clicking.interrupt();
+        }
+
+        if (moving != null) {
+            moving.interrupt();
+        }
     }
 }

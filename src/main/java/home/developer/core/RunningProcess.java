@@ -7,16 +7,18 @@ import home.developer.core.service.ActionCatcher;
 import home.developer.core.service.ImageCatcher;
 import home.developer.core.service.SoundPlayer;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PreDestroy;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RunningProcess {
     private final ActionCatcher actionCatcher;
     private final FishingProcess fishingProcess;
@@ -26,11 +28,13 @@ public class RunningProcess {
     private final SoundPlayer soundPlayer;
     private final CoreSettings coreSettings;
     private final RunConfiguration runConfiguration;
+    private final UpdateNameService updateNameService;
+
+    //Вне конструктора
+    int countFish = 0;
 
     public void run() throws InterruptedException {
         System.out.println("Процесс: Запуск процесса рыбалки");
-        UpdateNameService updateNameService = new UpdateNameService();
-        int countFish = 0;
         int updateAfterFish = randomGenerator.generateValue(5, 10);
 
         BufferedImage bufferedImage;
@@ -109,5 +113,13 @@ public class RunningProcess {
         robot.keyPress(KeyEvent.VK_1);
         Thread.sleep(randomGenerator.generateValue(100, 250));
         robot.keyRelease(KeyEvent.VK_1);
+    }
+
+    @PreDestroy
+    private void saveProgressBeforeExit() {
+        System.out.println("Процесс: Пытаемся сохранить процесс по рыбаке и Обновить имя в Discord");
+        if (runConfiguration.isDiscord()) {
+            updateNameService.updateNick(countFish);
+        }
     }
 }

@@ -10,7 +10,7 @@ import home.developer.configuration.entitySettings.mouseSettings.MouseSettings;
 import home.developer.configuration.entitySettings.profileSettings.ProfileSettings;
 import home.developer.configuration.entitySettings.targetSettings.TargetSettings;
 import home.developer.configuration.entitySettings.trajectorySettings.TrajectorySettings;
-import org.springframework.context.ApplicationContext;
+import home.developer.core.RunningProcess;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
@@ -20,13 +20,16 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * Запуск непрерывного процесса ловли рыбы
  */
 public class StartCore {
+    AnnotationConfigApplicationContext context;
+    Thread thread;
+
     public boolean run() {
         System.out.println("Загрузка конфигураций:");
         RunConfiguration runConfiguration = new RunConfigurationParser().loadRunConfiguration();
         System.out.println("Профиль загружен успешно:");
-        System.out.println("Профиль: название" + runConfiguration.getProfile());
-        System.out.println("Профиль: включить звук? " + runConfiguration.getProfile());
-        System.out.println("Профиль: включить интеграцию с Discord? " + runConfiguration.getProfile());
+        System.out.println("Профиль: название " + runConfiguration.getProfile());
+        System.out.println("Профиль: включить звук? " + runConfiguration.isAudio());
+        System.out.println("Профиль: включить интеграцию с Discord? " + runConfiguration.isDiscord());
 
         ParserConfiguration parserConfiguration = new ParserConfiguration();
         final ColorSettings colorSettings = parserConfiguration.getColorConfiguration(runConfiguration);
@@ -59,10 +62,34 @@ public class StartCore {
 
         if (readyForStart) {
             //run process
-            ApplicationContext context = new AnnotationConfigApplicationContext(CoreConfiguration.class);
+            context = new AnnotationConfigApplicationContext(CoreConfiguration.class);
+            RunningProcess runningProcess = context.getBean(RunningProcess.class);
+            Runnable runnable = () -> {
+                try {
+                    runningProcess.run();
+                } catch (InterruptedException e) {
+                    System.out.println("Процесс рыбалки остановлен");
+                }
+            };
+
+            thread = new Thread(runnable);
+            thread.start();
             return true;
         } else {
             return false;
+        }
+    }
+
+    public void stop() {
+
+        if (thread != null) {
+            System.out.println("Context: Остановка потока Run в Context");
+            thread.interrupt();
+        }
+
+        if (context != null) {
+            System.out.println("Context: Уничтожение Context с Beans");
+            context.destroy();
         }
     }
 }

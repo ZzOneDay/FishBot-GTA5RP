@@ -5,12 +5,14 @@ import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+@Service
 public class UpdateNameService {
     public void updateNick(int sum) {
         try {
@@ -25,8 +27,7 @@ public class UpdateNameService {
             fileWriter.write(result);
             fileWriter.close();
 
-            int resultCode = chaneNickName(updatedCount);
-            System.out.println(resultCode);
+            chaneNickName(updatedCount);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -44,7 +45,15 @@ public class UpdateNameService {
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
              CloseableHttpResponse response = httpClient.execute(post)) {
-            return response.getStatusLine().getStatusCode();
+            int resultCode = response.getStatusLine().getStatusCode();
+            if (resultCode == 200) {
+                System.out.println("Discord: Имя успешно обновлено на " + jsonData);
+            } else {
+                System.out.println("Discord: Ошибка при обновлении имени в Discord: resultCode is "
+                        + resultCode + " ответ: \n " + response);
+            }
+
+            return resultCode;
         }
     }
 }
